@@ -278,14 +278,16 @@ local function refreshTable()
         delCorner.CornerRadius = UDim.new(0, 4)
         delCorner.Parent = btnDel
 
-        -- Aksi Klik Tombol Copy Per Baris
+        -- Aksi Klik Tombol Copy Per Baris (Cuma Angka Start Address)
         btnRowCopy.MouseButton1Click:Connect(function()
-            local rowText = string.format("[%d] %s -> Start: %d | End: %d", index, fix.name, currentAddr, endAddr)
+            local rowText = tostring(currentAddr)
+            
             if setclipboard then
                 setclipboard(rowText)
             elseif toclipboard then
                 toclipboard(rowText)
             end
+            
             btnRowCopy.Text = "✔"
             task.wait(1)
             btnRowCopy.Text = "📋"
