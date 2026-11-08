@@ -144,7 +144,7 @@ lblCountHeader.Font = Enum.Font.GothamBold
 lblCountHeader.TextXAlignment = Enum.TextXAlignment.Left
 lblCountHeader.Parent = mainFrame
 
--- TOMBOL COPY (Baru!)
+-- TOMBOL COPY ALL
 local btnCopy = Instance.new("TextButton")
 btnCopy.Size = UDim2.new(0, 70, 0, 20)
 btnCopy.Position = UDim2.new(1, -170, 0, 112)
@@ -211,7 +211,7 @@ local function refreshTable()
         strip.Parent = row
 
         local lblTitle = Instance.new("TextLabel")
-        lblTitle.Size = UDim2.new(0, 150, 1, 0)
+        lblTitle.Size = UDim2.new(0, 110, 1, 0)
         lblTitle.Position = UDim2.new(0, 16, 0, 0)
         lblTitle.BackgroundTransparency = 1
         lblTitle.Text = index .. "   " .. fix.name
@@ -220,6 +220,21 @@ local function refreshTable()
         lblTitle.Font = Enum.Font.GothamMedium
         lblTitle.TextXAlignment = Enum.TextXAlignment.Left
         lblTitle.Parent = row
+
+        -- TOMBOL COPY DI SETIAP FIXTURE (SESUAI REQUEST LU)
+        local btnRowCopy = Instance.new("TextButton")
+        btnRowCopy.Size = UDim2.new(0, 30, 0, 22)
+        btnRowCopy.Position = UDim2.new(1, -185, 0.5, -11)
+        btnRowCopy.BackgroundColor3 = Color3.fromRGB(28, 34, 44)
+        btnRowCopy.Text = "📋"
+        btnRowCopy.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btnRowCopy.TextSize = 10
+        btnRowCopy.Font = Enum.Font.GothamBold
+        btnRowCopy.Parent = row
+
+        local rcCorner = Instance.new("UICorner")
+        rcCorner.CornerRadius = UDim.new(0, 4)
+        rcCorner.Parent = btnRowCopy
 
         local boxStart = Instance.new("TextLabel")
         boxStart.Size = UDim2.new(0, 48, 0, 22)
@@ -263,6 +278,19 @@ local function refreshTable()
         delCorner.CornerRadius = UDim.new(0, 4)
         delCorner.Parent = btnDel
 
+        -- Aksi Klik Tombol Copy Per Baris
+        btnRowCopy.MouseButton1Click:Connect(function()
+            local rowText = string.format("[%d] %s -> Start: %d | End: %d", index, fix.name, currentAddr, endAddr)
+            if setclipboard then
+                setclipboard(rowText)
+            elseif toclipboard then
+                toclipboard(rowText)
+            end
+            btnRowCopy.Text = "✔"
+            task.wait(1)
+            btnRowCopy.Text = "📋"
+        end)
+
         btnDel.MouseButton1Click:Connect(function()
             table.remove(addedFixtures, index)
             refreshTable()
@@ -289,24 +317,15 @@ btnCopy.MouseButton1Click:Connect(function()
     
     local fullResult = table.concat(textLines, "\n")
     
-    -- Support Executor Clipboard Function
     if setclipboard then
         setclipboard(fullResult)
-        btnCopy.Text = "✔ Copied!"
-        task.wait(1.5)
-        btnCopy.Text = "📋 Copy All"
     elseif toclipboard then
         toclipboard(fullResult)
-        btnCopy.Text = "✔ Copied!"
-        task.wait(1.5)
-        btnCopy.Text = "📋 Copy All"
-    else
-        print("--- DMX LIST DATA ---")
-        print(fullResult)
-        btnCopy.Text = "Printed to Console"
-        task.wait(1.5)
-        btnCopy.Text = "📋 Copy All"
     end
+    
+    btnCopy.Text = "✔ Copied!"
+    task.wait(1.5)
+    btnCopy.Text = "📋 Copy All"
 end)
 
 -- Toggle Dropdown
@@ -319,12 +338,12 @@ end)
 -- Tambah Fixture
 btnAdd.MouseButton1Click:Connect(function()
     local qty = tonumber(boxCount.Text) or 1
-    local preset = fixturePresets[selectedPresetIndex]
+    let_preset = fixturePresets[selectedPresetIndex]
     
     for i = 1, qty do
         table.insert(addedFixtures, {
-            name = preset.name:gsub(" %(%d+ch%)", ""),
-            ch = preset.ch
+            name = fixturePresets[selectedPresetIndex].name:gsub(" %(%d+ch%)", ""),
+            ch = fixturePresets[selectedPresetIndex].ch
         })
     end
     refreshTable()
