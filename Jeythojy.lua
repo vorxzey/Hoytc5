@@ -20,6 +20,7 @@ local fixturePresets = {
 
 local selectedPresetIndex = 1
 local addedFixtures = {}
+local isMinimized = false
 
 -- Main ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -48,7 +49,7 @@ stroke.Parent = mainFrame
 
 -- Title Bar
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -60, 0, 36)
+title.Size = UDim2.new(1, -80, 0, 36)
 title.Position = UDim2.new(0, 14, 0, 0)
 title.BackgroundTransparency = 1
 title.Text = "🔵 Fixture Manager"
@@ -58,13 +59,50 @@ title.Font = Enum.Font.GothamBold
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = mainFrame
 
+-- Tombol Close (x)
+local btnClose = Instance.new("TextButton")
+btnClose.Size = UDim2.new(0, 24, 0, 24)
+btnClose.Position = UDim2.new(1, -30, 0, 6)
+btnClose.BackgroundColor3 = Color3.fromRGB(35, 42, 54)
+btnClose.Text = "×"
+btnClose.TextColor3 = Color3.fromRGB(220, 100, 100)
+btnClose.TextSize = 14
+btnClose.Font = Enum.Font.GothamBold
+btnClose.Parent = mainFrame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 5)
+closeCorner.Parent = btnClose
+
+-- Tombol Minimize (-) (Baru!)
+local btnMinimize = Instance.new("TextButton")
+btnMinimize.Size = UDim2.new(0, 24, 0, 24)
+btnMinimize.Position = UDim2.new(1, -58, 0, 6)
+btnMinimize.BackgroundColor3 = Color3.fromRGB(35, 42, 54)
+btnMinimize.Text = "-"
+btnMinimize.TextColor3 = Color3.fromRGB(200, 210, 225)
+btnMinimize.TextSize = 14
+btnMinimize.Font = Enum.Font.GothamBold
+btnMinimize.Parent = mainFrame
+
+local minCorner = Instance.new("UICorner")
+minCorner.CornerRadius = UDim.new(0, 5)
+minCorner.Parent = btnMinimize
+
+-- Container Konten di Dalam (Biar gampang disembunyikan saat minimize)
+local contentContainer = Instance.new("Frame")
+contentContainer.Size = UDim2.new(1, 0, 1, -36)
+contentContainer.Position = UDim2.new(0, 0, 0, 36)
+contentContainer.BackgroundTransparency = 1
+contentContainer.Parent = mainFrame
+
 -- Selection Bar Atas
 local inputBar = Instance.new("Frame")
 inputBar.Size = UDim2.new(1, -24, 0, 42)
-inputBar.Position = UDim2.new(0, 12, 0, 40)
+inputBar.Position = UDim2.new(0, 12, 0, 4)
 inputBar.BackgroundColor3 = Color3.fromRGB(18, 22, 28)
 inputBar.BorderSizePixel = 0
-inputBar.Parent = mainFrame
+inputBar.Parent = contentContainer
 
 local inputBarCorner = Instance.new("UICorner")
 inputBarCorner.CornerRadius = UDim.new(0, 8)
@@ -123,37 +161,37 @@ addCorner.Parent = btnAdd
 -- Subtitle / Info
 local lblGuide = Instance.new("TextLabel")
 lblGuide.Size = UDim2.new(1, -24, 0, 20)
-lblGuide.Position = UDim2.new(0, 12, 0, 86)
+lblGuide.Position = UDim2.new(0, 12, 0, 50)
 lblGuide.BackgroundTransparency = 1
 lblGuide.Text = "Pilih fixture, ketik jumlah, lalu klik Tambah."
 lblGuide.TextColor3 = Color3.fromRGB(140, 155, 175)
 lblGuide.TextSize = 9
 lblGuide.Font = Enum.Font.Gotham
 lblGuide.TextXAlignment = Enum.TextXAlignment.Left
-lblGuide.Parent = mainFrame
+lblGuide.Parent = contentContainer
 
 -- Header Table
 local lblCountHeader = Instance.new("TextLabel")
 lblCountHeader.Size = UDim2.new(0, 120, 0, 20)
-lblCountHeader.Position = UDim2.new(0, 12, 0, 112)
+lblCountHeader.Position = UDim2.new(0, 12, 0, 76)
 lblCountHeader.BackgroundTransparency = 1
 lblCountHeader.Text = "Fixture (0)"
 lblCountHeader.TextColor3 = Color3.fromRGB(230, 235, 245)
 lblCountHeader.TextSize = 11
 lblCountHeader.Font = Enum.Font.GothamBold
 lblCountHeader.TextXAlignment = Enum.TextXAlignment.Left
-lblCountHeader.Parent = mainFrame
+lblCountHeader.Parent = contentContainer
 
 -- TOMBOL COPY ALL
 local btnCopy = Instance.new("TextButton")
 btnCopy.Size = UDim2.new(0, 70, 0, 20)
-btnCopy.Position = UDim2.new(1, -170, 0, 112)
+btnCopy.Position = UDim2.new(1, -170, 0, 76)
 btnCopy.BackgroundColor3 = Color3.fromRGB(35, 120, 80)
 btnCopy.Text = "📋 Copy All"
 btnCopy.TextColor3 = Color3.fromRGB(255, 255, 255)
 btnCopy.TextSize = 9
 btnCopy.Font = Enum.Font.GothamBold
-btnCopy.Parent = mainFrame
+btnCopy.Parent = contentContainer
 
 local copyCorner = Instance.new("UICorner")
 copyCorner.CornerRadius = UDim.new(0, 4)
@@ -162,22 +200,22 @@ copyCorner.Parent = btnCopy
 -- Tombol Hapus semua
 local btnClearAll = Instance.new("TextButton")
 btnClearAll.Size = UDim2.new(0, 80, 0, 20)
-btnClearAll.Position = UDim2.new(1, -92, 0, 112)
+btnClearAll.Position = UDim2.new(1, -92, 0, 76)
 btnClearAll.BackgroundTransparency = 1
 btnClearAll.Text = "Hapus semua"
 btnClearAll.TextColor3 = Color3.fromRGB(235, 90, 90)
 btnClearAll.TextSize = 10
 btnClearAll.Font = Enum.Font.GothamBold
 btnClearAll.TextXAlignment = Enum.TextXAlignment.Right
-btnClearAll.Parent = mainFrame
+btnClearAll.Parent = contentContainer
 
 -- Table Container
 local scrollList = Instance.new("ScrollingFrame")
-scrollList.Size = UDim2.new(1, -24, 1, -145)
-scrollList.Position = UDim2.new(0, 12, 0, 134)
+scrollList.Size = UDim2.new(1, -24, 1, -108)
+scrollList.Position = UDim2.new(0, 12, 0, 98)
 scrollList.BackgroundTransparency = 1
 scrollList.ScrollBarThickness = 3
-scrollList.Parent = mainFrame
+scrollList.Parent = contentContainer
 
 local listLayout = Instance.new("UIListLayout")
 listLayout.Padding = UDim.new(0, 6)
@@ -221,7 +259,7 @@ local function refreshTable()
         lblTitle.TextXAlignment = Enum.TextXAlignment.Left
         lblTitle.Parent = row
 
-        -- Tombol Copy Per Baris
+        -- Tombol Copy Per Baris (Start Address)
         local btnRowCopy = Instance.new("TextButton")
         btnRowCopy.Size = UDim2.new(0, 30, 0, 22)
         btnRowCopy.Position = UDim2.new(1, -185, 0.5, -11)
@@ -278,7 +316,6 @@ local function refreshTable()
         delCorner.CornerRadius = UDim.new(0, 4)
         delCorner.Parent = btnDel
 
-        -- Variabel address lokal untuk dicontek per baris
         local addrToCopy = currentAddr
 
         btnRowCopy.MouseButton1Click:Connect(function()
@@ -304,6 +341,25 @@ local function refreshTable()
     lblCountHeader.Text = string.format("Fixture (%d)", #addedFixtures)
     scrollList.CanvasSize = UDim2.new(0, 0, 0, #addedFixtures * 40)
 end
+
+-- Logika Minimize / Maximize UI
+btnMinimize.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    if isMinimized then
+        contentContainer.Visible = false
+        mainFrame.Size = UDim2.new(0, 380, 0, 36)
+        btnMinimize.Text = "+"
+    else
+        contentContainer.Visible = true
+        mainFrame.Size = UDim2.new(0, 380, 0, 480)
+        btnMinimize.Text = "-"
+    end
+end)
+
+-- Logika Close UI
+btnClose.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
 
 -- Logika Copy All ke Clipboard
 btnCopy.MouseButton1Click:Connect(function()
