@@ -221,7 +221,7 @@ local function refreshTable()
         lblTitle.TextXAlignment = Enum.TextXAlignment.Left
         lblTitle.Parent = row
 
-        -- TOMBOL COPY DI SETIAP FIXTURE (SESUAI REQUEST LU)
+        -- Tombol Copy Per Baris
         local btnRowCopy = Instance.new("TextButton")
         btnRowCopy.Size = UDim2.new(0, 30, 0, 22)
         btnRowCopy.Position = UDim2.new(1, -185, 0.5, -11)
@@ -278,14 +278,14 @@ local function refreshTable()
         delCorner.CornerRadius = UDim.new(0, 4)
         delCorner.Parent = btnDel
 
-        -- Aksi Klik Tombol Copy Per Baris (Cuma Angka Start Address)
+        -- Variabel address lokal untuk dicontek per baris
+        local addrToCopy = currentAddr
+
         btnRowCopy.MouseButton1Click:Connect(function()
-            local rowText = tostring(currentAddr)
-            
             if setclipboard then
-                setclipboard(rowText)
+                setclipboard(tostring(addrToCopy))
             elseif toclipboard then
-                toclipboard(rowText)
+                toclipboard(tostring(addrToCopy))
             end
             
             btnRowCopy.Text = "✔"
@@ -340,12 +340,12 @@ end)
 -- Tambah Fixture
 btnAdd.MouseButton1Click:Connect(function()
     local qty = tonumber(boxCount.Text) or 1
-    let_preset = fixturePresets[selectedPresetIndex]
+    local preset = fixturePresets[selectedPresetIndex]
     
     for i = 1, qty do
         table.insert(addedFixtures, {
-            name = fixturePresets[selectedPresetIndex].name:gsub(" %(%d+ch%)", ""),
-            ch = fixturePresets[selectedPresetIndex].ch
+            name = preset.name:gsub(" %(%d+ch%)", ""),
+            ch = preset.ch
         })
     end
     refreshTable()
